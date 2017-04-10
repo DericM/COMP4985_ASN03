@@ -86,7 +86,7 @@ void MainWindow::on_addPlaylistBTN_clicked()
 
     QString itemText = index.data(Qt::DisplayRole).toString();
 
-    addPlaylist(itemText);
+    addPlayList(itemText);
 }
 
 void MainWindow::on_skipBTN_clicked()
@@ -259,12 +259,12 @@ void MainWindow::removePlaylist(){
     foreach(QString item, playlist_model->stringList()){
         playList += item + "/";
     }
-    server.broadcast(PLAYLIST, QByteArray(playList.toStdString().c_str()));
+    server.TCPBroadcast(PLAYLIST, playList);
 }
 
 void MainWindow::addPlayList(QString item){
     playlist_model->insertRow(playlist_model->rowCount());
     QModelIndex row = playlist_model->index(playlist_model->rowCount()-1);
     playlist_model->setData(row, item);
-    server.broadcast(ADDLIST, QByteArray(item.toStdString().c_str()));
+    server.TCPBroadcast(ADDLIST, item);
 }

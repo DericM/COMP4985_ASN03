@@ -35,7 +35,7 @@ public:
     void runUDP();
 
 
-    bool multicast(char *message, const int len);
+    void TCPBroadcast(int command, QString &data);
 
     static void CALLBACK WorkerRoutine_RecvCommand(DWORD Error, DWORD BytesTransferred,
             LPWSAOVERLAPPED Overlapped, DWORD InFlags);

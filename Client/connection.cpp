@@ -162,6 +162,7 @@ bool Connection::sendto(SOCKET &s, sockaddr_in &server, char buffer[]){
         bytes_to_send -= n;
         if (n == 0)
             break;
+
     }
     qDebug() << "Client::send() buffer contents: " << buffer;
     return true;
@@ -171,7 +172,8 @@ bool Connection::recv(SOCKET &s, char buffer[]){
     DWORD bytes_to_read = BUFFERSIZE;
     char * bp = buffer;
     int n;
-    while ((n = ::recv(s, bp, bytes_to_read, 0)) < BUFFERSIZE)
+    int byteReceived = 0;
+    while ((byteReceived += ::recv(s, bp, bytes_to_read, 0)) < BUFFERSIZE)
     {
         int error = WSAGetLastError();
         if (error != WSA_IO_PENDING && error != 0)
@@ -182,9 +184,13 @@ bool Connection::recv(SOCKET &s, char buffer[]){
             return false;
         }
         bp += n;
+        byteReceived += n;
         bytes_to_read -= n;
         if (n == 0)
             break;
+        qDebug() << "Client::recv() n: " << n ;
+        qDebug() << "Client::recv() byteReceived: " << byteReceived ;
+
     }
     qDebug() << "Client::recv() buffer contents: " << buffer;
     return true;

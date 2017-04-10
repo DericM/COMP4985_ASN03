@@ -17,8 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this, SIGNAL( requestSong(QString) ), &client, SLOT( requestSong(QString) ));
     QObject::connect(&client, SIGNAL( receivedHeader(char*, qint64)), this, SLOT(handleReceivedHeader(char*,qint64)));
     QObject::connect(&client, SIGNAL( receivedChunkData(char*,qint64)), this, SLOT(handleReceivedChunk(char*,qint64)));
-    QObject::connect(&client, SIGNAL( receivedAvailSongs(char*)), this, SLOT(handleReceivedAvailSongs(char*)));
-    QObject::connect(&client, SIGNAL( receivedPlaylist(char*)), this, SLOT(handleReceivedPlaylist(char*)));
+    QObject::connect(&client, SIGNAL( receivedAvailSongs(QString)), this, SLOT(handleReceivedAvailSongs(QString)));
+    QObject::connect(&client, SIGNAL( receivedPlaylist(QString)), this, SLOT(handleReceivedPlaylist(QString)));
+    QObject::connect(&client, SIGNAL( receivedAddPlaylist(QString)), this, SLOT(handleReceivedAddPlaylist(QString)));
     QObject::connect(&client, SIGNAL( receivedProgressData(char*)), this, SLOT(handleReceivedProgressData(char*)));
 
 
@@ -121,7 +122,7 @@ void MainWindow::handleReceivedHeader(char *data, qint64 len)
             return;
         audioPlayer->resetPlayer();
         if(isSetHeader){
-            playlist_model->removeRow(0);
+            //playlist_model->removeRow(0);
         }
         isSetHeader = true;
         qDebug()<<"size : " << data;
@@ -146,13 +147,16 @@ void MainWindow::handleReceivedChunk(char *data, qint64 len){
 
 }
 
-void MainWindow::handleReceivedAvailSongs(char *list){
-    QStringList stringList = QString(list).split('/');
+void MainWindow::handleReceivedAvailSongs(QString list){
+    qDebug()<<"handleReceivedAvailSongs : " << list;
+    QStringList stringList = list.split('/');
     stringList.removeLast();
     available_song_model->setStringList(stringList);
 }
-void MainWindow::handleReceivedPlaylist(char *list){
-    QStringList stringList = QString(list).split('/');
+void MainWindow::handleReceivedPlaylist(QString list){
+    qDebug()<<"handleReceivedPlaylist : " << list;
+
+    QStringList stringList = list.split('/');
     stringList.removeLast();
     playlist_model->setStringList(stringList);
 }
@@ -201,6 +205,13 @@ void MainWindow::decodeMessage(QString message) {
         break;
     }
 }
+
+void MainWindow::handleReceivedAddPlaylist(QString item){
+    playlist_model->insertRow(playlist_model->rowCount());
+    QModelIndex row = playlist_model->index(playlist_model->rowCount()-1);
+    playlist_model->setData(row, item);
+}
+
 
 
 void MainWindow::setVolume(int value)

@@ -116,20 +116,18 @@ void Client::runTCP(){
                 emit receivedHeader(header, BUFFERSIZE-1);
                 break;
             case AVAILSONG:
-                char availSongs[BUFFERSIZE - 1];
-                memcpy(availSongs, &rbuf[1], BUFFERSIZE-1);
-                emit receivedAvailSongs(availSongs);
+                emit receivedAvailSongs(QString(&rbuf[1]));
                 break;
             case PLAYLIST:
-                char playlist[BUFFERSIZE - 1];
-                memcpy(playlist, &rbuf[1], BUFFERSIZE-1);
-                emit receivedPlaylist(playlist);
+                emit receivedPlaylist(QString(&rbuf[1]));
                 break;
             case PROGRESS:
                 char progressData[BUFFERSIZE - 1];
                 memcpy(progressData, &rbuf[1], BUFFERSIZE-1);
                 emit receivedProgressData(progressData);
                 break;
+            case ADDLIST:
+                emit receivedAddPlaylist(QString(&rbuf[1]));
         }
     }
 }

@@ -58,9 +58,11 @@ private slots:
 
     void handleReceivedChunk(char *data, qint64 len);
 
-    void handleReceivedAvailSongs(char *);
+    void handleReceivedAvailSongs(QString);
 
-    void handleReceivedPlaylist(char *);
+    void handleReceivedPlaylist(QString);
+
+    void handleReceivedAddPlaylist(QString);
 
 
     void handleReceivedProgressData(char *);

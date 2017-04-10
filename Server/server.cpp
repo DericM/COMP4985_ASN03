@@ -170,6 +170,7 @@ void CALLBACK Server::WorkerRoutine_RecvCommand(DWORD Error, DWORD BytesTransfer
             //conn.WSASend(SI, WorkerRoutine_SendList);
             return;
         case 2: //add list
+            //TCPBroadcast(list);
             return;
         case 3: //play or pause
         case 4: // fastforward
@@ -213,21 +214,20 @@ void CALLBACK Server::WorkerRoutine_SendList(DWORD Error, DWORD BytesTransferred
 
 }
 
-bool Server::multicast(char *message, const int len){
+void Server::TCPBroadcast(int command, QString &data){
+    data.prepend(command);
+
     for(auto& SI: client_addresses){
         qDebug() << "UDPMulticaset() Send to address: " << inet_ntoa(SI->client_address.sin_addr);
-        qDebug() << message;
-        SI->DataBuf.buf = message;
-        SI->DataBuf.len = len;
-
-        //if(!conn.WSASendTo(SI->socket_udp, SI->DataBuf.buf)){
-            //close
-        //}
+        ZeroMemory(&(SI->Overlapped), sizeof(WSAOVERLAPPED));
+        memset(SI->Buffer, 0, sizeof(SI->Buffer));
+        memcpy(SI->Buffer, data.toStdString().c_str(), data.size());
+        SI->DataBuf.buf = SI->Buffer;
+        SI->DataBuf.len = BUFFERSIZE;
+        conn.WSASendTo(SI, WorkerRoutine_TCPSend);
     }
-    return true;
+    qDebug() << "UDPMulticaset() finished sending to group.";
 }
-
-
 
 void Server::startUDP() {
     if(!conn.WSAStartup())

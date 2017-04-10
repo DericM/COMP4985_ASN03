@@ -26,8 +26,9 @@ public:
 signals:
     void receivedHeader(char *data, qint64 len);
     void receivedChunkData(char *data, qint64 len);
-    void receivedAvailSongs(char *);
-    void receivedPlaylist(char *);
+    void receivedAvailSongs(QString);
+    void receivedPlaylist(QString);
+    void receivedAddPlaylist(QString);
     void receivedProgressData(char *);
 
 public slots:
